@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>ACTabScrollView.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Alamofire.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,6 +42,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>4B9E0170E5F85EEC0DD6D1D86B91B0F6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>6B236F89A9784FC32D528D7667D27B1C</key>
 		<dict>
 			<key>primary</key>
@@ -52,17 +62,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>BE95AF69DB68228769ADA767962B657A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C0472E3FF60AB19F9D3E6A7F6180B27B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E125D90A9C5677612D2901433D0B2D87</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F2070BEA3DFBAB8566298049F4E72B9B</key>
+		<key>D7BDD532640C3267C679F9B4A6A1C165</key>
 		<dict>
 			<key>primary</key>
 			<true/>

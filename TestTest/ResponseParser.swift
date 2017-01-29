@@ -9,6 +9,12 @@
 import Foundation
 import SwiftyJSON
 
+struct PostCategory {
+    let id: Int
+    let name: String
+    let slug: String
+}
+
 struct Post {
     let category_id: Int
     let day: String
@@ -32,6 +38,10 @@ struct Screenshot {
 }
 
 class ResponseParser {
+    static let sharedInstance: ResponseParser = {
+        let instance = ResponseParser()
+        return instance
+    }()
     
     var productHuntAPI = ProductHuntAPI()
     
@@ -45,17 +55,45 @@ class ResponseParser {
     }
     
     /**
-     Gets posts from api.producthunt.com
+     Gets categories from api.producthunt.com
      
-     - Parameter completion: processes array of posts
-     - Parameter days_ago: posts created 'days_ago' days ago are returned
+     - Parameter completion: is called after getting categories
      */
-    func getPosts(completion: @escaping ([Post]) -> Void, days_ago: Int) {
-        productHuntAPI.getData(parse: parse, completion: completion, days_ago: days_ago)
+    func getCategories(completion: @escaping ([PostCategory]) -> Void) {
+        productHuntAPI.getCategories(parse: parse, completion: completion)
     }
     
     /**
-     Parses result of get query
+     Gets posts from api.producthunt.com
+     
+     - Parameter completion: processes array of posts
+     - Parameter category: posts in given 'category'
+     - Parameter days_ago: posts created 'days_ago' days ago are returned
+     */
+    func getPosts(completion: @escaping ([Post]) -> Void, category: PostCategory, days_ago: Int) {
+        productHuntAPI.getPosts(parse: parse, completion: completion, category: category.slug, days_ago: days_ago)
+    }
+    
+    /**
+     Parses result of categories get query
+     
+     - Parameter json: response in JSON format
+     - Parameter completion: processes result of the parse
+     */
+    func parse(json: JSON, completion: @escaping ([PostCategory]) -> Void) {
+        if let categories = json["categories"].array {
+            var retrievedCategories = [PostCategory]()
+            for category in categories {
+                retrievedCategories.append(parseSingleCategory(category: category))
+            }
+            completion(retrievedCategories)
+        } else {
+            completion([PostCategory]())
+        }
+    }
+    
+    /**
+     Parses result of posts get query
      
      - Parameter json: response in JSON format
      - Parameter completion: processes result of the parse
@@ -83,6 +121,16 @@ class ResponseParser {
             UserDefaults.standard.set(access_token, forKey: "accessToken")
         }
         completion()
+    }
+    
+    /**
+     Creates PostCategory instance from category in JSON format
+     
+     - Parameter category: category in JSON format
+     - Returns: PostCategory instance
+     */
+    private func parseSingleCategory(category: JSON) -> PostCategory {
+        return PostCategory(id: category["id"].intValue, name: category["name"].stringValue, slug: category["slug"].stringValue)
     }
     
     /**

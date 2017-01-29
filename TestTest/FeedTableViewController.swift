@@ -10,8 +10,8 @@ import UIKit
 
 class FeedTableViewController: UITableViewController {
     var postSections = [[Post]]()
-    let responseParser = ResponseParser()
     var previousDaysShown = 0
+    var category: PostCategory!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,12 +22,7 @@ class FeedTableViewController: UITableViewController {
         refreshControl = UIRefreshControl()
         refreshControl?.attributedTitle = NSAttributedString(string: "Refreshing...")
         refreshControl?.addTarget(self, action: #selector(FeedTableViewController.refresh), for: UIControlEvents.valueChanged)
-        
-        if UserDefaults.standard.string(forKey: "accessToken") != nil {
-            getPosts()
-        } else {
-            authorizeAndGetPosts()
-        }
+        loadPreviousDay()
     }
 
     override func didReceiveMemoryWarning() {
@@ -36,40 +31,18 @@ class FeedTableViewController: UITableViewController {
     }
     
     /**
-     Updates tableView. Executed after getting posts.
-     */
-    func completion(posts: [Post]) {
-        if postSections.count > 0 {
-            postSections[0] = posts
-        } else {
-            postSections.append(posts)
-        }
-        self.tableView.reloadData()
-    }
-    
-    /**
-     Loads posts of today
-     */
-    func getPosts() {
-        responseParser.getPosts(completion: completion, days_ago: 0)
-    }
-    
-    /**
-     Gets client level token and then loads posts of today
-     */
-    func authorizeAndGetPosts() {
-        responseParser.authorize(completion: getPosts)
-    }
-    
-    /**
-     Loads posts of previous day
+     Loads posts of 'previousDaysShown' days ago
      */
     func loadPreviousDay() {
+        ResponseParser.sharedInstance.getPosts(completion: { (posts: [Post]) -> () in
+            if posts.isEmpty {
+                self.loadPreviousDay()
+            } else {
+                self.postSections.append(posts)
+                self.tableView.reloadData()
+            }
+        }, category: category, days_ago: previousDaysShown)
         previousDaysShown += 1
-        responseParser.getPosts(completion: { (posts: [Post]) -> () in
-            self.postSections.append(posts)
-            self.tableView.reloadData()
-        }, days_ago: previousDaysShown)
     }
     
     func refresh(sender:AnyObject) {
@@ -81,7 +54,8 @@ class FeedTableViewController: UITableViewController {
     
     func refreshBegin(refreshEnd:@escaping (Int) -> ()) {
         DispatchQueue.global().async {
-            self.getPosts()
+            self.previousDaysShown = 0
+            self.loadPreviousDay()
             sleep(2)
             
             DispatchQueue.main.async {
@@ -103,7 +77,7 @@ class FeedTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedTableViewCell
         cell.post = postSections[indexPath.section][indexPath.row]
-        if indexPath.section == postSections.count - 1 && indexPath.row == postSections[indexPath.section].count - 1 {
+        if (indexPath.section == postSections.count - 1 && indexPath.row == postSections[indexPath.section].count - 1) {
             self.loadPreviousDay()
         }
         return cell
