@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '88E9EC28B8B46C3631E6B242B50F4442'
-               BlueprintName = 'Alamofire'
+               BlueprintIdentifier = 'D7BDD532640C3267C679F9B4A6A1C165'
+               BlueprintName = 'ACTabScrollView'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'Alamofire.framework'>
+               BuildableName = 'ACTabScrollView.framework'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

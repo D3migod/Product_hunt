@@ -13,10 +13,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        if UserDefaults.standard.string(forKey: "accessToken") == nil {
+            ResponseParser.sharedInstance.authorize {ResponseParser.sharedInstance.getCategories(completion: self.instantiateFirstController)}
+        } else {
+            ResponseParser.sharedInstance.getCategories(completion: self.instantiateFirstController)
+        }
+        let navigationBarAppearace = UINavigationBar.appearance()
+        navigationBarAppearace.tintColor = UIColor(red: 77.0 / 255, green: 79.0 / 255, blue: 84.0 / 255, alpha: 1)
+//        navigationBarAppearace.barTintColor = UIColor(red: 214.0 / 255, green: 86.0 / 255, blue: 61.0 / 255, alpha: 1)
+        navigationBarAppearace.isTranslucent = false
+        navigationBarAppearace.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 77.0 / 255, green: 79.0 / 255, blue: 84.0 / 255, alpha: 1)]
         return true
+    }
+    
+    func instantiateFirstController(postCategories: [PostCategory]) {
+        if let navigationViewController = self.window!.rootViewController!.storyboard!.instantiateViewController(withIdentifier: "RevealController") as? UINavigationController {
+//        if let navigationController = window?.rootViewController as? UINavigationController {
+            if let mainViewController = navigationViewController.viewControllers[0] as? ACTabScrollViewController {
+                mainViewController.postCategories = postCategories
+            }
+            self.window?.rootViewController = navigationViewController
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

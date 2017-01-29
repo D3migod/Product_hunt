@@ -6,6 +6,7 @@ target 'TestTest' do
   pod 'Alamofire', '~> 4.3'
   pod 'SwiftyJSON'
   pod 'AlamofireImage', '~> 3.1'
+  pod 'ACTabScrollView', :git => 'https://github.com/azurechen/ACTabScrollView.git'
 
   target 'TestTestTests' do
     inherit! :search_paths

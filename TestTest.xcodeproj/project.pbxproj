@@ -10,6 +10,7 @@
 		105A0B2C90C10CE4FF1D14AD /* Pods_TestTestUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABA779707BFB8C96F494606D /* Pods_TestTestUITests.framework */; };
 		1612BD2E1E3B3C5800631E15 /* FeedTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1612BD2D1E3B3C5800631E15 /* FeedTableViewController.swift */; };
 		1612BD301E3B54EF00631E15 /* FeedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1612BD2F1E3B54EF00631E15 /* FeedTableViewCell.swift */; };
+		16183F8A1E3DDE00009315AC /* ACTabScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16183F891E3DDE00009315AC /* ACTabScrollViewController.swift */; };
 		161AF7351E3C93B100E559C0 /* DetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161AF7341E3C93B100E559C0 /* DetailTableViewController.swift */; };
 		164455371E3A0899008E0D48 /* ProductHuntAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164455361E3A0899008E0D48 /* ProductHuntAPI.swift */; };
 		164455391E3A253E008E0D48 /* ResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164455381E3A253E008E0D48 /* ResponseParser.swift */; };
@@ -43,6 +44,7 @@
 /* Begin PBXFileReference section */
 		1612BD2D1E3B3C5800631E15 /* FeedTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedTableViewController.swift; sourceTree = "<group>"; };
 		1612BD2F1E3B54EF00631E15 /* FeedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedTableViewCell.swift; sourceTree = "<group>"; };
+		16183F891E3DDE00009315AC /* ACTabScrollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTabScrollViewController.swift; sourceTree = "<group>"; };
 		161AF7341E3C93B100E559C0 /* DetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailTableViewController.swift; sourceTree = "<group>"; };
 		164455361E3A0899008E0D48 /* ProductHuntAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductHuntAPI.swift; sourceTree = "<group>"; };
 		164455381E3A253E008E0D48 /* ResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseParser.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 			children = (
 				1612BD2D1E3B3C5800631E15 /* FeedTableViewController.swift */,
 				161AF7341E3C93B100E559C0 /* DetailTableViewController.swift */,
+				16183F891E3DDE00009315AC /* ACTabScrollViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -505,6 +508,7 @@
 				16915EEA1E38CF670062605A /* AppDelegate.swift in Sources */,
 				164455371E3A0899008E0D48 /* ProductHuntAPI.swift in Sources */,
 				164455391E3A253E008E0D48 /* ResponseParser.swift in Sources */,
+				16183F8A1E3DDE00009315AC /* ACTabScrollViewController.swift in Sources */,
 				1612BD2E1E3B3C5800631E15 /* FeedTableViewController.swift in Sources */,
 				1612BD301E3B54EF00631E15 /* FeedTableViewCell.swift in Sources */,
 			);

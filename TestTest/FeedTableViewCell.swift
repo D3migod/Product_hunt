@@ -41,5 +41,13 @@ class FeedTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        upvoteButton.backgroundColor = .clear
+        upvoteButton.layer.cornerRadius = 2
+        upvoteButton.layer.borderWidth = 1
+        upvoteButton.layer.borderColor = UIColor.groupTableViewBackground.cgColor
+    }
 
 }
