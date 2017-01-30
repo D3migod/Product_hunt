@@ -13,6 +13,7 @@ import SafariServices
 class DetailTableViewController: UITableViewController {
     @IBOutlet weak var screenshotImageView: UIImageView!
     @IBOutlet weak var upvotesButton: UIButton!
+    @IBOutlet weak var getItButton: UIButton!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     var redirectUrl: String!
@@ -20,6 +21,7 @@ class DetailTableViewController: UITableViewController {
     var post: Post?
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Show post data
         if let unwrappedPost = post {
             titleLabel.text = unwrappedPost.name
             descriptionLabel.text = unwrappedPost.tagline
@@ -32,15 +34,30 @@ class DetailTableViewController: UITableViewController {
             }
             redirectUrl = unwrappedPost.redirect_url
         }
+        // Configure upvotes button appearance
+        upvotesButton.backgroundColor = .white
+        upvotesButton.layer.cornerRadius = 2
+        upvotesButton.layer.borderWidth = 1
+        upvotesButton.layer.borderColor = UIColor.groupTableViewBackground.cgColor
+        // Configure getIt button appearance
+        getItButton.layer.cornerRadius = 2
+        getItButton.layer.borderWidth = 1
+        getItButton.layer.borderColor = UIColor.groupTableViewBackground.cgColor
+        // Configure tableView appearance
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 220
+        // Hide bottom empty cells
         tableView.tableFooterView = UIView()
         tableView.allowsSelection = false
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -49,6 +66,7 @@ class DetailTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        // Fixed height for image
         if indexPath.row == 0 {
             return 220
         } else {
@@ -56,6 +74,7 @@ class DetailTableViewController: UITableViewController {
         }
     }
     
+    // Opens post url in safari controller
     @IBAction func showItButtonPressed(_ sender: Any) {
         if let url = URL(string: redirectUrl) {
             let vc = SFSafariViewController(url: url, entersReaderIfAvailable: true)

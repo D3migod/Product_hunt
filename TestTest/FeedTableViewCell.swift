@@ -44,6 +44,7 @@ class FeedTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        // Configure upvoteButton appearance
         upvoteButton.backgroundColor = .clear
         upvoteButton.layer.cornerRadius = 2
         upvoteButton.layer.borderWidth = 1

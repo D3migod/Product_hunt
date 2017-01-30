@@ -7,15 +7,16 @@
 //
 
 import UIKit
+import UserNotifications
 
 class FeedTableViewController: UITableViewController {
     var postSections = [[Post]]()
     var previousDaysShown = 0
     var category: PostCategory!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         tableView.estimatedRowHeight = 400
         tableView.rowHeight = UITableViewAutomaticDimension
         
@@ -24,7 +25,7 @@ class FeedTableViewController: UITableViewController {
         refreshControl?.addTarget(self, action: #selector(FeedTableViewController.refresh), for: UIControlEvents.valueChanged)
         loadPreviousDay()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -34,46 +35,126 @@ class FeedTableViewController: UITableViewController {
      Loads posts of 'previousDaysShown' days ago
      */
     func loadPreviousDay() {
-        ResponseParser.sharedInstance.getPosts(completion: { (posts: [Post]) -> () in
+        ResponseParser.sharedInstance.getPosts(completion: { (posts: [Post], error: Error?) -> () in
+            guard error == nil else {
+                if let localizedDescription = error?.localizedDescription {
+                    let alertController = UIAlertController(title: "Error getting posts", message: "\(localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
+                    alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                return
+            }
             if posts.isEmpty {
+                self.previousDaysShown += 1
                 self.loadPreviousDay()
             } else {
-                self.postSections.append(posts)
+                var mustSendNotification = false
+                var newPosts: [Post]!
+                if self.postSections.count > self.previousDaysShown {
+                    // If new posts appeared, return them
+                    if self.previousDaysShown == 0 {
+                        mustSendNotification = true
+                        newPosts = self.subtract(oldQueryPosts: self.postSections[0], newQueryPosts: posts)
+                    }
+                    self.postSections[self.previousDaysShown] = posts
+                } else {
+                    self.postSections.append(posts)
+                }
                 self.tableView.reloadData()
+                if mustSendNotification && UIApplication.shared.applicationState == .background {
+                    self.sendNotification(newPosts: newPosts!)
+                }
+                self.previousDaysShown += 1
             }
         }, category: category, days_ago: previousDaysShown)
-        previousDaysShown += 1
+        
     }
     
-    func refresh(sender:AnyObject) {
-        refreshBegin(refreshEnd: {(x:Int) -> () in
-                        self.tableView.reloadData()
-                        self.refreshControl?.endRefreshing()
+    /**
+     Sends notification about new posts.
+     
+     - Parameter newPosts: new posts received during last update
+     - If newPosts contains one post, the description is shown
+     - If newPosts contains several posts, the number and the category are shown
+     */
+    private func sendNotification(newPosts: [Post]) {
+        guard newPosts.count > 0 else {
+            return
+        }
+        let content = UNMutableNotificationContent()
+        if newPosts.count == 1 {
+            content.title = "Check out \(newPosts[0].name)!"
+            content.body = newPosts[0].tagline
+        } else {
+            content.title = "Check out \(newPosts.count) new \(category.name.lowercased()) posts!"
+        }
+        content.sound = UNNotificationSound.default()
+        let identifier = "UYLLocalNotification"
+        let request = UNNotificationRequest(identifier: identifier,
+                                            content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: { (error) in
+            if let _ = error {
+                print("Error sending notification")
+            }
         })
     }
     
-    func refreshBegin(refreshEnd:@escaping (Int) -> ()) {
+    /**
+     Sends notification about new posts.
+     
+     - Parameter newPosts: new posts received during last update
+     - If newPosts contains one post, the description is shown
+     - If newPosts contains several posts, the number and the category are shown
+     */
+    private func subtract(oldQueryPosts:[Post], newQueryPosts:[Post]) -> [Post] {
+        var newPosts = [Post]()
+        // Comparing all elements in the arrays just in case some post was deleted. Slow but reliable.
+        for newQueryPost in newQueryPosts {
+            var postIsNew = true
+            for oldQueryPost in oldQueryPosts {
+                if newQueryPost == oldQueryPost {
+                    postIsNew = true
+                    break
+                }
+            }
+            if postIsNew {
+                newPosts.append(newQueryPost)
+            }
+        }
+        return newPosts
+    }
+    
+    /**
+     Updates tableView's content on push
+     */
+    func refresh(sender:AnyObject) {
+        self.previousDaysShown = 0
+        refreshBegin(refreshEnd: {() -> () in
+            self.refreshControl?.endRefreshing()
+        })
+    }
+    
+    private func refreshBegin(refreshEnd:@escaping () -> ()) {
         DispatchQueue.global().async {
-            self.previousDaysShown = 0
             self.loadPreviousDay()
             sleep(2)
             
             DispatchQueue.main.async {
-                refreshEnd(0)
+                refreshEnd()
             }
         }
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return postSections.count
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return postSections[section].count
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedTableViewCell
         cell.post = postSections[indexPath.section][indexPath.row]
@@ -83,11 +164,25 @@ class FeedTableViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard postSections.count > section, postSections[section].count > 0 else {
+            return nil
+        }
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 25 ))
+        label.backgroundColor = .groupTableViewBackground
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.text = postSections[section][0].formattedDate
+        label.textColor = UIColor(red: 77.0 / 255, green: 79.0 / 255, blue: 84.0 / 255, alpha: 1)
+        label.textAlignment = .center
+        
+        return label
+    }
+    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard postSections.count > section, postSections[section].count > 0 else {
             return nil
         }
-        return postSections[section][0].day
+        return postSections[section][0].formattedDate
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
