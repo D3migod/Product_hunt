@@ -23,7 +23,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="120"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ACO-ci-mdF" id="mZa-J4-XUr">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="119.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="119"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3A7-X2-zi9">
@@ -141,10 +141,10 @@
                                                     </state>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PTx-O2-po5">
-                                                    <rect key="frame" x="87" y="8" width="75" height="32"/>
+                                                    <rect key="frame" x="87" y="8" width="90" height="32"/>
                                                     <color key="backgroundColor" red="0.87313610406091369" green="0.42948785833499364" blue="0.32248436136366598" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="75" id="Dd8-wl-bpH"/>
+                                                        <constraint firstAttribute="width" constant="90" id="Dd8-wl-bpH"/>
                                                         <constraint firstAttribute="height" constant="32" id="hD2-gz-0Ae"/>
                                                     </constraints>
                                                     <state key="normal" title="GET IT">
@@ -164,7 +164,7 @@
                                                 <constraint firstItem="PTx-O2-po5" firstAttribute="top" secondItem="dMC-Ht-9o3" secondAttribute="top" constant="8" id="uVL-Ap-ndA"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                        <color key="backgroundColor" red="0.96862745098039216" green="0.96862745098039216" blue="0.96862745098039216" alpha="1" colorSpace="calibratedRGB"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="56" id="I01-zg-NgZ">
                                         <rect key="frame" x="0.0" y="268" width="375" height="56"/>
@@ -218,6 +218,7 @@
                     </tableView>
                     <connections>
                         <outlet property="descriptionLabel" destination="mMK-Be-VPm" id="PAk-kS-fen"/>
+                        <outlet property="getItButton" destination="PTx-O2-po5" id="Jz9-Vz-zUK"/>
                         <outlet property="screenshotImageView" destination="eLJ-Qr-zZy" id="n5K-XT-W2p"/>
                         <outlet property="titleLabel" destination="6Oh-xo-sag" id="NMe-yc-phk"/>
                         <outlet property="upvotesButton" destination="c5g-rj-cjD" id="oZl-Gf-Dia"/>
@@ -272,12 +273,24 @@
                     <view key="view" contentMode="scaleToFill" id="voN-U3-pxl">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="product_hunt_placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="ZpL-ym-W4y">
+                                <rect key="frame" x="-12.5" y="233.5" width="400" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="SST-4A-t89"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="ZpL-ym-W4y" firstAttribute="centerY" secondItem="voN-U3-pxl" secondAttribute="centerY" id="QD0-ku-U0O"/>
+                            <constraint firstItem="ZpL-ym-W4y" firstAttribute="centerX" secondItem="voN-U3-pxl" secondAttribute="centerX" id="tl3-Is-4Hi"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7fe-FN-5Za" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1062" y="417"/>
+            <point key="canvasLocation" x="935.20000000000005" y="933.28335832083962"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="rl6-G9-gr1">
@@ -298,4 +311,7 @@
             <point key="canvasLocation" x="1863" y="934"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="product_hunt_placeholder" width="400" height="400"/>
+    </resources>
 </document>

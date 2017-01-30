@@ -9,34 +9,6 @@
 import Foundation
 import SwiftyJSON
 
-struct PostCategory {
-    let id: Int
-    let name: String
-    let slug: String
-}
-
-struct Post {
-    let category_id: Int
-    let day: String
-    let id: Int
-    let name: String
-    let tagline: String
-    let upvotes: Int
-    let thumbnail: Thumbnail
-    let screenshot: Screenshot
-    let redirect_url: String
-}
-
-struct Thumbnail {
-    let id: Int
-    let image_url: String
-}
-
-struct Screenshot {
-    let smallImageUrl: String
-    let bigImageUrl: String
-}
-
 class ResponseParser {
     static let sharedInstance: ResponseParser = {
         let instance = ResponseParser()
@@ -50,7 +22,7 @@ class ResponseParser {
      
      - Parameter completion: is called after getting token
      */
-    func authorize(completion: @escaping () -> Void) {
+    func authorize(completion: @escaping (Error?) -> Void) {
         productHuntAPI.getToken(parse: parse, completion: completion)
     }
     
@@ -59,7 +31,7 @@ class ResponseParser {
      
      - Parameter completion: is called after getting categories
      */
-    func getCategories(completion: @escaping ([PostCategory]) -> Void) {
+    func getCategories(completion: @escaping ([PostCategory], Error?) -> Void) {
         productHuntAPI.getCategories(parse: parse, completion: completion)
     }
     
@@ -70,7 +42,7 @@ class ResponseParser {
      - Parameter category: posts in given 'category'
      - Parameter days_ago: posts created 'days_ago' days ago are returned
      */
-    func getPosts(completion: @escaping ([Post]) -> Void, category: PostCategory, days_ago: Int) {
+    func getPosts(completion: @escaping ([Post], Error?) -> Void, category: PostCategory, days_ago: Int) {
         productHuntAPI.getPosts(parse: parse, completion: completion, category: category.slug, days_ago: days_ago)
     }
     
@@ -80,15 +52,15 @@ class ResponseParser {
      - Parameter json: response in JSON format
      - Parameter completion: processes result of the parse
      */
-    func parse(json: JSON, completion: @escaping ([PostCategory]) -> Void) {
+    func parse(json: JSON, error: Error?, completion: @escaping ([PostCategory], Error?) -> Void) {
         if let categories = json["categories"].array {
             var retrievedCategories = [PostCategory]()
             for category in categories {
                 retrievedCategories.append(parseSingleCategory(category: category))
             }
-            completion(retrievedCategories)
+            completion(retrievedCategories, error)
         } else {
-            completion([PostCategory]())
+            completion([PostCategory](), error)
         }
     }
     
@@ -98,15 +70,15 @@ class ResponseParser {
      - Parameter json: response in JSON format
      - Parameter completion: processes result of the parse
      */
-    func parse(json: JSON, completion: @escaping ([Post]) -> Void) {
+    func parse(json: JSON, error: Error?, completion: @escaping ([Post], Error?) -> Void) {
         if let posts = json["posts"].array {
             var retrievedPosts = [Post]()
             for post in posts {
                 retrievedPosts.append(parseSinglePost(post: post))
             }
-            completion(retrievedPosts)
+            completion(retrievedPosts, error)
         } else {
-            completion([Post]())
+            completion([Post](), error)
         }
     }
     
@@ -116,11 +88,11 @@ class ResponseParser {
      - Parameter json: response in JSON format
      - Parameter completion: processes result of the parse
      */
-    func parse(json: JSON, completion: @escaping () -> Void) {
+    func parse(json: JSON, error: Error?, completion: @escaping (Error?) -> Void) {
         if let access_token = json["access_token"].string {
             UserDefaults.standard.set(access_token, forKey: "accessToken")
         }
-        completion()
+        completion(error)
     }
     
     /**

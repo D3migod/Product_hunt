@@ -7,19 +7,19 @@
 //
 
 import Foundation
-
+import SystemConfiguration
 import Alamofire
 import SwiftyJSON
 
 class ProductHuntAPI {
+    
     var manager: SessionManager!
+    
     init() {
-        let memoryCapacity = 500 * 1024 * 1024; // 500 MB
-        let diskCapacity = 500 * 1024 * 1024;
-        let cache = URLCache(memoryCapacity: memoryCapacity, diskCapacity: diskCapacity, diskPath: "shared_cache")
         let configuration = URLSessionConfiguration.default
         configuration.requestCachePolicy = .useProtocolCachePolicy
-        configuration.urlCache = cache
+        configuration.urlCache = URLCache(memoryCapacity: 100 * 1024 * 1024, diskCapacity: 100 * 1024 * 1024, diskPath: "shared_cache")
+        configuration.requestCachePolicy = .useProtocolCachePolicy
         manager = Alamofire.SessionManager(configuration: configuration)
     }
     
@@ -29,7 +29,7 @@ class ProductHuntAPI {
      - Parameter parse: parses returned JSON response
      - Parameter completion: processes result of the parse
      */
-    func getCategories(parse: @escaping (JSON, @escaping ([PostCategory]) -> Void) -> Void, completion: @escaping ([PostCategory]) -> Void) {
+    func getCategories(parse: @escaping (JSON, Error?, @escaping ([PostCategory], Error?) -> Void) -> Void, completion: @escaping ([PostCategory], Error?) -> Void) {
         if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
             manager.request(
                 "https://api.producthunt.com/v1/categories",
@@ -38,17 +38,19 @@ class ProductHuntAPI {
                 headers: ["Accept": "application/json",
                           "Content-Type": "application/json",
                           "Authorization": "Bearer \(accessToken)",
-                    "Host": "api.producthunt.com"]).responseJSON { (response) -> Void in
+                    "Host": "api.producthunt.com"]).responseJSON { response in
                         print(response.description)
-                        let cachedURLResponse = CachedURLResponse(response: response.response!, data: (response.data! as NSData) as Data, userInfo: nil, storagePolicy: .allowed)
-                        URLCache.shared.storeCachedResponse(cachedURLResponse, for: response.request!)
-                        
-                        guard response.result.isSuccess, response.result.error == nil else {
-                            print("Error while getting response: \(response.result.error)")
-                            completion([PostCategory]())
-                            return
+                        guard let receivedResponse = response.response,
+                            let receivedData = response.data,
+                            let receivedRequest = response.request,
+                            response.result.isSuccess else {
+                                print("Error while getting response: \(response.result.error)")
+                                completion([PostCategory](), response.result.error)
+                                return
                         }
-                        parse(JSON(data: cachedURLResponse.data), completion)
+                        let cachedURLResponse = CachedURLResponse(response: receivedResponse, data: (receivedData as NSData) as Data, userInfo: nil, storagePolicy: .allowed)
+                        URLCache.shared.storeCachedResponse(cachedURLResponse, for: receivedRequest)
+                        parse(JSON(data: cachedURLResponse.data), response.result.error, completion)                        
             }
         }
     }
@@ -61,7 +63,7 @@ class ProductHuntAPI {
         - Parameter category: posts in given 'category'
         - Parameter days_ago: posts created 'days_ago' days ago are returned
      */
-    func getPosts(parse: @escaping (JSON, @escaping ([Post]) -> Void) -> Void, completion: @escaping ([Post]) -> Void, category: String, days_ago: Int) {
+    func getPosts(parse: @escaping (JSON, Error?, @escaping ([Post], Error?) -> Void) -> Void, completion: @escaping ([Post], Error?) -> Void, category: String, days_ago: Int) {
         var urlParameters = "/\(category)/posts"
         if days_ago > 0 {
             urlParameters += "?days_ago=\(days_ago)"
@@ -77,15 +79,18 @@ class ProductHuntAPI {
                           "Authorization": "Bearer \(accessToken)",
                           "Host": "api.producthunt.com"]).responseJSON { (response) -> Void in
                             print(response.description)
-                            let cachedURLResponse = CachedURLResponse(response: response.response!, data: (response.data! as NSData) as Data, userInfo: nil, storagePolicy: .allowed)
-                            URLCache.shared.storeCachedResponse(cachedURLResponse, for: response.request!)
-                            
-                            guard response.result.isSuccess, response.result.error == nil else {
-                                print("Error while getting response: \(response.result.error)")
-                                completion([Post]())
-                                return
+                            guard let receivedResponse = response.response,
+                                let receivedData = response.data,
+                                let receivedRequest = response.request,
+                                response.result.isSuccess,
+                                response.result.error == nil else {
+                                    print("Error while getting response: \(response.result.error)")
+                                    completion([Post](), response.result.error)
+                                    return
                             }
-                            parse(JSON(data: cachedURLResponse.data), completion)
+                            let cachedURLResponse = CachedURLResponse(response: receivedResponse, data: (receivedData as NSData) as Data, userInfo: nil, storagePolicy: .allowed)
+                            URLCache.shared.storeCachedResponse(cachedURLResponse, for: receivedRequest)
+                            parse(JSON(data: cachedURLResponse.data), response.result.error, completion)
             }
         }
     }
@@ -96,7 +101,7 @@ class ProductHuntAPI {
      - Parameter parse: parses returned JSON response
      - Parameter completion: processes result of the parse
      */
-    func getToken(parse: @escaping (JSON, @escaping () -> Void) -> Void, completion: @escaping () -> Void) {
+    func getToken(parse: @escaping (JSON, Error?, @escaping (Error?) -> Void) -> Void, completion: @escaping (Error?) -> Void) {
         manager.request(
             "https://api.producthunt.com/v1/oauth/token",
             method: .post,
@@ -107,12 +112,14 @@ class ProductHuntAPI {
             headers: ["Accept": "application/json", "Content-Type": "application/json",
                       "Host": "api.producthunt.com"]).responseJSON { (response) -> Void in
                         print(response.description)
-                        guard response.result.isSuccess else {
+                        guard response.result.isSuccess,
+                            let receivedValue = response.result.value,
+                            response.result.error == nil else {
                             print("Error while getting response: \(response.result.error)")
-                            completion()
+                            completion(response.result.error)
                             return
                         }
-                        parse(JSON(response.result.value!), completion)
+                        parse(JSON(receivedValue), response.result.error, completion)
         }
     }
     

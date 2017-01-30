@@ -13,19 +13,20 @@ class ACTabScrollViewController: UIViewController, ACTabScrollViewDelegate, ACTa
     @IBOutlet weak var tabScrollView: ACTabScrollView!
     
     var contentViews: [UIView] = []
+    // Each tab corresponds to a category
     var postCategories: [PostCategory] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tabScrollView.defaultPage = 1
+        // Configure tabScrollView
+        tabScrollView.defaultPage = 0
         tabScrollView.tabSectionHeight = 44
         tabScrollView.pagingEnabled = true
-        tabScrollView.cachedPageLimit = 3
-        
         tabScrollView.delegate = self
         tabScrollView.dataSource = self
         
+        // Set up content section
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         for category in postCategories {
             let vc = storyboard.instantiateViewController(withIdentifier: "FeedTableViewController") as! FeedTableViewController
@@ -38,7 +39,6 @@ class ACTabScrollViewController: UIViewController, ACTabScrollViewDelegate, ACTa
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -64,6 +64,7 @@ class ACTabScrollViewController: UIViewController, ACTabScrollViewDelegate, ACTa
         return postCategories.count
     }
     
+    // Configure tabs' appearance
     func tabScrollView(_ tabScrollView: ACTabScrollView, tabViewForPageAtIndex index: Int) -> UIView {
         let label = UILabel()
         label.text = postCategories[index].name.uppercased()
@@ -80,15 +81,4 @@ class ACTabScrollViewController: UIViewController, ACTabScrollViewDelegate, ACTa
     func tabScrollView(_ tabScrollView: ACTabScrollView, contentViewForPageAtIndex index: Int) -> UIView {
         return contentViews[index]
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

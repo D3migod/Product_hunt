@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		105A0B2C90C10CE4FF1D14AD /* Pods_TestTestUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABA779707BFB8C96F494606D /* Pods_TestTestUITests.framework */; };
+		16099FBC1E3F4E0200740932 /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16099FBB1E3F4E0200740932 /* PostModel.swift */; };
 		1612BD2E1E3B3C5800631E15 /* FeedTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1612BD2D1E3B3C5800631E15 /* FeedTableViewController.swift */; };
 		1612BD301E3B54EF00631E15 /* FeedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1612BD2F1E3B54EF00631E15 /* FeedTableViewCell.swift */; };
 		16183F8A1E3DDE00009315AC /* ACTabScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16183F891E3DDE00009315AC /* ACTabScrollViewController.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		16099FBB1E3F4E0200740932 /* PostModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
 		1612BD2D1E3B3C5800631E15 /* FeedTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedTableViewController.swift; sourceTree = "<group>"; };
 		1612BD2F1E3B54EF00631E15 /* FeedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedTableViewCell.swift; sourceTree = "<group>"; };
 		16183F891E3DDE00009315AC /* ACTabScrollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTabScrollViewController.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 			children = (
 				164455361E3A0899008E0D48 /* ProductHuntAPI.swift */,
 				164455381E3A253E008E0D48 /* ResponseParser.swift */,
+				16099FBB1E3F4E0200740932 /* PostModel.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -299,6 +302,11 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 278MVNCWZX;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					16915EF91E38CF670062605A = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -505,6 +513,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				161AF7351E3C93B100E559C0 /* DetailTableViewController.swift in Sources */,
+				16099FBC1E3F4E0200740932 /* PostModel.swift in Sources */,
 				16915EEA1E38CF670062605A /* AppDelegate.swift in Sources */,
 				164455371E3A0899008E0D48 /* ProductHuntAPI.swift in Sources */,
 				164455391E3A253E008E0D48 /* ResponseParser.swift in Sources */,
