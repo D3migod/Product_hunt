@@ -12,13 +12,14 @@ import ACTabScrollView
 class ACTabScrollViewController: UIViewController, ACTabScrollViewDelegate, ACTabScrollViewDataSource {
     @IBOutlet weak var tabScrollView: ACTabScrollView!
     
-    var contentViews: [UIView] = []
+    private var contentViews: [UIView] = []
     // Each tab corresponds to a category
     var postCategories: [PostCategory] = []
+    private var previousPageIndex = 0
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // Configure tabScrollView
         tabScrollView.defaultPage = 0
         tabScrollView.tabSectionHeight = 44
@@ -31,10 +32,10 @@ class ACTabScrollViewController: UIViewController, ACTabScrollViewDelegate, ACTa
         for category in postCategories {
             let vc = storyboard.instantiateViewController(withIdentifier: "FeedTableViewController") as! FeedTableViewController
             vc.category = category
-            
             addChildViewController(vc)
             contentViews.append(vc.view)
         }
+        (self.childViewControllers[tabScrollView.defaultPage] as! FeedTableViewController).isCurrentlyShown = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -54,6 +55,9 @@ class ACTabScrollViewController: UIViewController, ACTabScrollViewDelegate, ACTa
     
     // MARK: ACTabScrollViewDelegate
     func tabScrollView(_ tabScrollView: ACTabScrollView, didChangePageTo index: Int) {
+        (self.childViewControllers[previousPageIndex] as! FeedTableViewController).isCurrentlyShown = false
+        (self.childViewControllers[index] as! FeedTableViewController).isCurrentlyShown = true
+        previousPageIndex = index
     }
     
     func tabScrollView(_ tabScrollView: ACTabScrollView, didScrollPageTo index: Int) {

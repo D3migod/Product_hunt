@@ -18,15 +18,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Authorize if needed, load data and show first controller
         if UserDefaults.standard.string(forKey: "accessToken") == nil {
             ResponseParser.sharedInstance.authorize {(error: Error?) -> () in
-                if error != nil {
+                guard error == nil else {
                     if let localizedDescription = error?.localizedDescription {
                         let alertController = UIAlertController(title: "Error getting access token", message: localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
                         alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
                         self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
                     }
-                    if (error as? URLError)?.code != URLError.Code.notConnectedToInternet {
-                        return
-                    }
+                    return
                 }
                 ResponseParser.sharedInstance.getCategories(completion: self.instantiateFirstController)}
         } else {
@@ -79,11 +77,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     if let childViewController = childViewController as? FeedTableViewController {
                         childViewController.refresh(sender: self)
                         print("Data was updated in background")
-                        completionHandler(.newData)
+                        
                     }
                 }
             }
         }
+        completionHandler(.newData)
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
