@@ -16,7 +16,7 @@ class DetailTableViewController: UITableViewController {
     @IBOutlet weak var getItButton: UIButton!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
-    var redirectUrl: String!
+    private var redirectUrl: String!
     
     var post: Post?
     override func viewDidLoad() {

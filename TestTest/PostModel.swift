@@ -51,7 +51,15 @@ struct Thumbnail {
     let image_url: String
 }
 
+func ==(lhs: Thumbnail, rhs: Thumbnail) -> Bool {
+    return lhs.id == rhs.id && lhs.image_url == rhs.image_url
+}
+
 struct Screenshot {
     let smallImageUrl: String
     let bigImageUrl: String
+}
+
+func ==(lhs: Screenshot, rhs: Screenshot) -> Bool {
+    return lhs.smallImageUrl == rhs.smallImageUrl && lhs.bigImageUrl == rhs.bigImageUrl
 }

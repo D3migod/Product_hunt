@@ -10,9 +10,10 @@ import UIKit
 import UserNotifications
 
 class FeedTableViewController: UITableViewController {
-    var postSections = [[Post]]()
-    var previousDaysShown = 0
+    private var postSections = [[Post]]()
+    private var previousDaysShown = 0
     var category: PostCategory!
+    var isCurrentlyShown = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +37,7 @@ class FeedTableViewController: UITableViewController {
      */
     func loadPreviousDay() {
         ResponseParser.sharedInstance.getPosts(completion: { (posts: [Post], error: Error?) -> () in
+            // Show user error
             guard error == nil else {
                 if let localizedDescription = error?.localizedDescription {
                     let alertController = UIAlertController(title: "Error getting posts", message: "\(localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
@@ -44,14 +46,16 @@ class FeedTableViewController: UITableViewController {
                 }
                 return
             }
+            // If no posts were created the day requested, ask for the posts for the previous day
             if posts.isEmpty {
                 self.previousDaysShown += 1
                 self.loadPreviousDay()
             } else {
                 var mustSendNotification = false
                 var newPosts: [Post]!
+                // If posts for the day were loaded previously
                 if self.postSections.count > self.previousDaysShown {
-                    // If new posts appeared, return them
+                    // If new posts appeared, return them and send a notification
                     if self.previousDaysShown == 0 {
                         mustSendNotification = true
                         newPosts = self.subtract(oldQueryPosts: self.postSections[0], newQueryPosts: posts)
@@ -61,7 +65,8 @@ class FeedTableViewController: UITableViewController {
                     self.postSections.append(posts)
                 }
                 self.tableView.reloadData()
-                if mustSendNotification && UIApplication.shared.applicationState == .background {
+                // If new posts appeared, application is in background state and this controller is shown to user, send notification
+                if mustSendNotification && UIApplication.shared.applicationState == .background && self.isCurrentlyShown {
                     self.sendNotification(newPosts: newPosts!)
                 }
                 self.previousDaysShown += 1
@@ -93,8 +98,10 @@ class FeedTableViewController: UITableViewController {
         let request = UNNotificationRequest(identifier: identifier,
                                             content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request, withCompletionHandler: { (error) in
-            if let _ = error {
-                print("Error sending notification")
+            if let unwrappedError = error {
+                print("Error sending notification \(unwrappedError.localizedDescription)")
+            } else {
+                print("Notification was sent successfully")
             }
         })
     }
